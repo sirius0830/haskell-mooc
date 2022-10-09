@@ -119,7 +119,8 @@ sumTo n = n + sumTo (n-1)
 -- Use recursion.
 
 power :: Integer -> Integer -> Integer
-power = todo
+power n 0 = 1
+power n k = n * power n (k-1)
 
 ------------------------------------------------------------------------------
 -- Ex 11: ilog3 n should be the number of times you can divide given
@@ -138,4 +139,5 @@ power = todo
 --   ilog3 7 ==> 2
 
 ilog3 :: Integer -> Integer
-ilog3 = todo
+ilog3 0 = 0
+ilog3 x = ilog3 (div x 3) + 1 
