@@ -103,8 +103,16 @@ leftpad a k
 -- * you can use the show function to convert a number into a string
 -- * you'll probably need a recursive helper function
 
+shownum :: Integer -> String
+shownum n
+  | n>0 = show n ++"... " ++ shownum (n-1)
+  | n==0 = ""
+  
+
 countdown :: Integer -> String
-countdown = todo
+countdown n =
+  "Ready! " ++ shownum n ++"... " ++"Liftoff!"
+  
 
 ------------------------------------------------------------------------------
 -- Ex 6: implement the function smallestDivisor that returns the
@@ -120,9 +128,17 @@ countdown = todo
 -- remember this in the next exercise!
 --
 -- Hint: remember the mod function!
+helperDiv :: Integer -> Integer -> Integer
+helperDiv n k
+  | ((n `mod` k) ==0) = k
+  | otherwise = helperDiv n (k+1)
 
 smallestDivisor :: Integer -> Integer
-smallestDivisor = todo
+smallestDivisor n 
+  | n>1 = helperDiv n 2
+  | otherwise = 1
+   
+
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement a function isPrime that checks if the given number
@@ -131,7 +147,12 @@ smallestDivisor = todo
 -- Ps. 0 and 1 are not prime numbers
 
 isPrime :: Integer -> Bool
-isPrime = todo
+isPrime n
+  | n == 0 = False
+  | n == 1 = False
+  | n > 1 = if smallestDivisor n == n
+    then True
+    else False
 
 ------------------------------------------------------------------------------
 -- Ex 8: implement a function biggestPrimeAtMost that returns the
@@ -146,4 +167,6 @@ isPrime = todo
 --   biggestPrimeAtMost 10 ==> 7
 
 biggestPrimeAtMost :: Integer -> Integer
-biggestPrimeAtMost = todo
+biggestPrimeAtMost n 
+  | (isPrime n ==True) = n
+  | (isPrime n == False)= biggestPrimeAtMost (n-1)
