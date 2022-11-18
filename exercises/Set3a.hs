@@ -129,9 +129,11 @@ capitalize str = unwords (map capitalizeFirst (words str))
 -- Hints:
 --   * k^max > max
 --   * the function takeWhile
+powerList :: Int -> [Int]
+powerList a = iterate (*a) 1
 
 powers :: Int -> Int -> [Int]
-powers k max = todo
+powers k max = takeWhile (<(max+1)) (powerList k)
 
 ------------------------------------------------------------------------------
 -- Ex 7: implement a functional while loop. While should be a function
@@ -154,8 +156,9 @@ powers k max = todo
 --     ==> Avvt
 
 while :: (a->Bool) -> (a->a) -> a -> a
-while check update value = todo
-
+while check update value = if check value
+    then while check update (update value)
+    else value
 ------------------------------------------------------------------------------
 -- Ex 8: another version of a while loop. This time, the check
 -- function returns an Either value. A Left value means stop, a Right
@@ -174,7 +177,9 @@ while check update value = todo
 -- Hint! Remember the case-of expression from lecture 2.
 
 whileRight :: (a -> Either b a) -> a -> b
-whileRight check x = todo
+whileRight check x = case (check x) of
+    Left b -> b
+    Right a -> whileRight check a
 
 -- for the whileRight examples:
 -- step k x doubles x if it's less than k
@@ -198,7 +203,7 @@ bomb x = Right (x-1)
 -- Hint! This is a great use for list comprehensions
 
 joinToLength :: Int -> [String] -> [String]
-joinToLength = todo
+joinToLength n xs = [(first ++ last)| first<- xs, last <-xs,(length(first ++ last))==n]
 
 ------------------------------------------------------------------------------
 -- Ex 10: implement the operator +|+ that returns a list with the first
@@ -211,7 +216,8 @@ joinToLength = todo
 --   [1,2,3] +|+ [4,5,6]  ==> [1,4]
 --   [] +|+ [True]        ==> [True]
 --   [] +|+ []            ==> []
-
+(+|+) :: [a] -> [a] ->[a]
+xs +|+ ys = (take 1 xs) ++ (take 1 ys)
 
 ------------------------------------------------------------------------------
 -- Ex 11: remember the lectureParticipants example from Lecture 2? We
@@ -228,7 +234,10 @@ joinToLength = todo
 --   sumRights [Left "bad!", Left "missing"]         ==>  0
 
 sumRights :: [Either a Int] -> Int
-sumRights = todo
+sumRights xs 
+  | xs == [] = 0
+  | head xs == Right k = k : sumRights (drop 1 xs)
+  | otherwise = 0 : sumRights (drop 1 xs)
 
 ------------------------------------------------------------------------------
 -- Ex 12: recall the binary function composition operation
