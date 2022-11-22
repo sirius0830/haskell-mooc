@@ -234,10 +234,7 @@ xs +|+ ys = (take 1 xs) ++ (take 1 ys)
 --   sumRights [Left "bad!", Left "missing"]         ==>  0
 
 sumRights :: [Either a Int] -> Int
-sumRights xs 
-  | xs == [] = 0
-  | head xs == Right k = k : sumRights (drop 1 xs)
-  | otherwise = 0 : sumRights (drop 1 xs)
+sumRights = sum . map (either (const 0) id)
 
 ------------------------------------------------------------------------------
 -- Ex 12: recall the binary function composition operation
@@ -253,7 +250,12 @@ sumRights xs
 --   multiCompose [(3*), (2^), (+1)] 0 ==> 6
 --   multiCompose [(+1), (2^), (3*)] 0 ==> 2
 
-multiCompose fs = todo
+multiCompose' :: [(a -> a)] -> a -> a
+multiCompose' [] x         = x
+multiCompose' (f:fs) x     = multiCompose' fs (f x)
+
+multiCompose :: [(a -> a)] -> a -> a
+multiCompose fs x = multiCompose' (reverse fs) x
 
 ------------------------------------------------------------------------------
 -- Ex 13: let's consider another way to compose multiple functions. Given
@@ -273,8 +275,8 @@ multiCompose fs = todo
 --   multiApp concat [take 3, reverse] "race" ==> "racecar"
 --   multiApp id [head, (!!2), last] "axbxc" ==> ['a','b','c'] i.e. "abc"
 --   multiApp sum [head, (!!2), last] [1,9,2,9,3] ==> 6
-
-multiApp = todo
+multiApp :: ([a] -> b) -> [(c -> a)] -> c -> b
+multiApp f gs s = f (map (\x -> x s) gs)
 
 ------------------------------------------------------------------------------
 -- Ex 14: in this exercise you get to implement an interpreter for a
@@ -309,4 +311,29 @@ multiApp = todo
 -- function, the surprise won't work.
 
 interpreter :: [String] -> [String]
-interpreter commands = todo
+interpreter commands = interpret 0 0 commands
+
+interpret :: Int -> Int -> [String] -> [String]
+interpret _ _ [] = []
+interpret x y commands = evalPrint sX sY (head dW) : interpret sX sY (drop 1 dW)
+                            where l = takeWhile direction commands
+                                  dW = dropWhile direction commands
+                                  sX = sum (map conX l) + x
+                                  sY = sum (map conY l) + y
+
+conX :: String -> Int
+conX dir = case dir of "left" -> -1
+                       "right" -> 1
+                       dir -> 0
+
+conY :: String -> Int
+conY dir = case dir of "up" -> 1
+                       "down" -> -1
+                       dir -> 0
+
+direction :: String -> Bool
+direction s = elem s ["up", "down", "left", "right"]
+
+evalPrint :: Int -> Int -> String -> String
+evalPrint x _ "printX" = show x
+evalPrint _ y "printY" = show y
