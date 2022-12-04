@@ -34,8 +34,12 @@ import Data.Array
 -- PS. check out the error message you get with your implementation if
 -- you remove the Eq a => constraint from the type!
 
-allEqual :: Eq a => [a] -> Bool
-allEqual xs = todo
+allEqual :: Eq a=> [a] -> Bool
+allEqual [] = True
+allEqual [x] = True
+allEqual (x:y:xs) = if x == y
+    then allEqual (y:xs)
+    else False
 
 ------------------------------------------------------------------------------
 -- Ex 2: implement the function distinct which returns True if all
@@ -50,7 +54,11 @@ allEqual xs = todo
 --   distinct [1,2] ==> True
 
 distinct :: Eq a => [a] -> Bool
-distinct = todo
+distinct [] = True
+distinct [x] = True
+distinct (x:y:xs) = if x == y
+    then False
+    else (distinct (y:xs) && distinct (x:xs)) 
 
 ------------------------------------------------------------------------------
 -- Ex 3: implement the function middle that returns the middle value
@@ -63,7 +71,14 @@ distinct = todo
 --   middle 'b' 'a' 'c'  ==> 'b'
 --   middle 1 7 3        ==> 3
 
-middle = todo
+middle :: Ord a=> a ->a->a->a
+middle x y z = if (x > y && x < z) || (x < y && x > z)
+    then x
+    else
+      if (y > x && y < z) || (y < x && y >z)
+        then y
+        else z
+    
 
 ------------------------------------------------------------------------------
 -- Ex 4: return the range of an input list, that is, the difference
@@ -78,8 +93,8 @@ middle = todo
 --   rangeOf [4,2,1,3]          ==> 3
 --   rangeOf [1.5,1.0,1.1,1.2]  ==> 0.5
 
-rangeOf :: [a] -> a
-rangeOf = todo
+rangeOf :: (Ord a, Num a) => [a] -> a
+rangeOf x = last (sort x) - head (sort x)
 
 ------------------------------------------------------------------------------
 -- Ex 5: given a (non-empty) list of (non-empty) lists, return the longest
@@ -97,7 +112,15 @@ rangeOf = todo
 --   longest [[1,2,3],[4,5],[6]] ==> [1,2,3]
 --   longest ["bcd","def","ab"] ==> "bcd"
 
-longest = todo
+longest :: Ord a=> [[a]] -> [a]
+longest (x:[]) = x 
+longest (x:y:xs)= if length x > length y
+    then longest (x:xs)
+    else if length x < length y
+        then longest (y:xs)
+        else if x<y
+            then longest (x:xs)
+            else longest (y:xs)
 
 ------------------------------------------------------------------------------
 -- Ex 6: Implement the function incrementKey, that takes a list of
@@ -113,8 +136,17 @@ longest = todo
 --   incrementKey True [(True,1),(False,3),(True,4)] ==> [(True,2),(False,3),(True,5)]
 --   incrementKey 'a' [('a',3.4)] ==> [('a',4.4)]
 
-incrementKey :: k -> [(k,v)] -> [(k,v)]
-incrementKey = todo
+--incrementKeyHelper :: (Eq k, Num v) => k -> [(k,v)] -> [(k,v)]
+--incrementKeyHelper a (b,c)
+--  | a==b = (b,c+1)
+--  | a/=b = (b,c)
+
+incrementKey :: (Eq k, Num v) => k -> [(k,v)] -> [(k,v)]
+incrementKey x [] = []
+incrementKey x ((a,b):ys) =
+    if a == x
+        then (a,b+1) : incrementKey x ys
+        else (a,b) : incrementKey x ys  
 
 ------------------------------------------------------------------------------
 -- Ex 7: compute the average of a list of values of the Fractional
@@ -129,7 +161,7 @@ incrementKey = todo
 -- length to a Fractional
 
 average :: Fractional a => [a] -> a
-average xs = todo
+average xs = (sum xs) / fromIntegral(length xs)
 
 ------------------------------------------------------------------------------
 -- Ex 8: given a map from player name to score and two players, return
@@ -148,8 +180,12 @@ average xs = todo
 --     ==> "Lisa"
 
 winner :: Map.Map String Int -> String -> String -> String
-winner scores player1 player2 = todo
-
+winner scores player1 player2 = 
+    if Map.findWithDefault 0 player1 scores > Map.findWithDefault 0 player2 scores
+        then player1
+        else if Map.findWithDefault 0 player1 scores < Map.findWithDefault 0 player2 scores
+            then player2
+            else player1
 ------------------------------------------------------------------------------
 -- Ex 9: compute how many times each value in the list occurs. Return
 -- the frequencies as a Map from value to Int.
@@ -162,8 +198,10 @@ winner scores player1 player2 = todo
 --   freqs [False,False,False,True]
 --     ==> Map.fromList [(False,3),(True,1)]
 
-freqs :: (Eq a, Ord a) => [a] -> Map.Map a Int
-freqs xs = todo
+freqs :: (Eq a, Ord a) => [a] -> Map.Map a Int 
+freqs (x:xs)
+    | if x  
+     
 
 ------------------------------------------------------------------------------
 -- Ex 10: recall the withdraw example from the course material. Write a
